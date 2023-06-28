@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import User, { IUser } from "../model/User";
-
-export const singUp = async (req: Request, res: Response) => {
+import validator from "./validation";
+export const singUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { username, password } = req.body;
     const existingUser = await User.findOne({ username });
@@ -10,6 +10,10 @@ export const singUp = async (req: Request, res: Response) => {
       return res
         .status(409)
         .json("invalid user, theres already an user with that name ");
+    }
+    const isInvalid = await validator(req)
+    if(isInvalid){
+      return res.status(400).json({ errors: isInvalid });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: IUser = new User({
@@ -19,12 +23,17 @@ export const singUp = async (req: Request, res: Response) => {
     await newUser.save();
     return res.status(201).json({ message: "user register completed" });
   } catch (err) {
-    console.log(err);
+    next(err)
   }
 };
 
-export const logIn = (req: Request, res: Response) => {
-  res.status(200).json("authorized user");
+export const logIn = (req: Request, res: Response, next:NextFunction) => {
+  try{
+    return res.status(200).json("authorized user");
+  } catch(err){
+    next(err)
+  }
+  
 };
 
 export const isAuthenticated = (

@@ -8,6 +8,7 @@ import extractStringEnvVar from "./controllers/extractEnv";
 import db from "./db/db";
 import router from "./routes/authRoutes";
 import passportConfig from "./controllers/passport";
+import { errorHandler } from "./controllers/errorHandler";
 const app = express();
 
 app.use(cors());
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
   res.send("<h1>hello world</h1>");
 });
 app.use("/api/auth", router);
+app.use(errorHandler)
 
 app.listen(extractStringEnvVar("PORT") || 3000, () => {
   try {
@@ -42,3 +44,5 @@ app.listen(extractStringEnvVar("PORT") || 3000, () => {
     console.log(err);
   }
 });
+
+export default app
