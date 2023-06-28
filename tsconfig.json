@@ -10,7 +10,7 @@
     },
     "include": [
       "src/**/*.ts"
-    ],
+, "src/tests/authRoutes.test.js"    ],
     "exclude": [
       "node_modules"
     ]
